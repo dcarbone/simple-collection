@@ -1,0 +1,36 @@
+{
+    "name" : "dcarbone/simple-collection",
+    "type" : "library",
+    "description" : "A bare-bones Collection-style class for PHP 5.3.3+",
+
+    "keywords": [
+        "php",
+        "Collection",
+        "collection",
+        "ArrayObject",
+        "arrayobject"
+    ],
+    "homepage": "https://github.com/dcarbone/simple-collection",
+    "license": "MIT",
+
+    "authors" : [
+        {
+            "name" : "Daniel Carbone",
+            "email" : "daniel.p.carbone@gmail.com"
+        }
+    ],
+
+    "require" : {
+        "php" : ">=5.3.3"
+    },
+
+    "require-dev" : {
+        "phpunit/phpunit": "~4.1 <5.0.0"
+    },
+
+    "autoload" : {
+        "psr-4" : {
+            "DCarbone\\" : "src/"
+        }
+    }
+}
