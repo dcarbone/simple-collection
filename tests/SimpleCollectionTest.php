@@ -419,6 +419,7 @@ class SimpleCollectionTest extends \PHPUnit_Framework_TestCase
     }
     //</editor-fold>
 
+    //<editor-fold desc="SearchMethodTests">
     /**
      * @covers \DCarbone\SimpleCollection::search
      * @depends testCanConstructObjectWithNoArguments
@@ -461,5 +462,68 @@ class SimpleCollectionTest extends \PHPUnit_Framework_TestCase
     public function testStrictSearchOnPopulatedObject(\DCarbone\SimpleCollection $collection)
     {
         $this->assertFalse($collection->search('4', true));
+    }
+    //</editor-fold>
+
+    /**
+     * @covers \DCarbone\SimpleCollection::__set
+     * @depends testCanConstructObjectWithNoArguments
+     * @depends testBasicArrayAccessImplementation
+     * @return \DCarbone\SimpleCollection
+     */
+    public function test__SetMethod()
+    {
+        $collection = new \DCarbone\SimpleCollection();
+
+        $collection->key0 = 'value0';
+        $collection->OtherKey = 'OtherValue';
+        $collection->{'key with space'} = 'value with space';
+        $collection->{0} = 'integer key';
+
+        $this->assertTrue(isset($collection['key0']));
+        $this->assertTrue(isset($collection['OtherKey']));
+        $this->assertTrue(isset($collection['key with space']));
+        $this->assertTrue(isset($collection[0]));
+
+        $this->assertEquals('value0', $collection['key0']);
+        $this->assertEquals('OtherValue', $collection['OtherKey']);
+        $this->assertEquals('value with space', $collection['key with space']);
+        $this->assertEquals('integer key', $collection[0]);
+
+        return $collection;
+    }
+
+    /**
+     * @covers  \DCarbone\SimpleCollection::__get
+     * @depends test__SetMethod
+     * @param \DCarbone\SimpleCollection $collection
+     * @return \DCarbone\SimpleCollection
+     */
+    public function test__GetMethod(\DCarbone\SimpleCollection $collection)
+    {
+        $this->assertEquals('value0', $collection->key0);
+        $this->assertEquals('OtherValue', $collection->OtherKey);
+        $this->assertEquals('value with space', $collection->{'key with space'});
+        $this->assertEquals('integer key', $collection->{0});
+
+        return $collection;
+    }
+
+    /**
+     * @covers \DCarbone\SimpleCollection::__get
+     * @depends test__GetMethod
+     * @param \DCarbone\SimpleCollection $collection
+     */
+    public function testModifyingValuesWith__GetMethod(\DCarbone\SimpleCollection $collection)
+    {
+        $collection->key0 = new \stdClass();
+        $this->assertInternalType('object', $collection->key0);
+
+        $collection->key0->key1 = 'value1';
+        $this->assertEquals('value1', $collection->key0->key1);
+
+        $collection->key0 = array('value0');
+        $collection->key0[] = 'value1';
+        $this->assertEquals('value1', end($collection->key0));
     }
 }
