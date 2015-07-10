@@ -49,9 +49,9 @@ interface SimpleCollectionInterface extends \SeekableIterator, \ArrayAccess, \Co
     public function search($value, $strict = false);
 
     /**
-     * Moves internal storage array pointer to last index
+     * Moves internal storage array pointer to last index and returns value
      *
-     * @return void
+     * @return mixed
      */
     public function end();
 
@@ -79,4 +79,9 @@ interface SimpleCollectionInterface extends \SeekableIterator, \ArrayAccess, \Co
      * @return bool
      */
     public function isEmpty();
+
+    /**
+     * @return array
+     */
+    public function getArrayCopy();
 }

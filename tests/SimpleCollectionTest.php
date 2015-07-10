@@ -465,6 +465,7 @@ class SimpleCollectionTest extends \PHPUnit_Framework_TestCase
     }
     //</editor-fold>
 
+    //<editor-fold desc="GetSetMethodTests">
     /**
      * @covers \DCarbone\SimpleCollection::__set
      * @depends testCanConstructObjectWithNoArguments
@@ -525,5 +526,18 @@ class SimpleCollectionTest extends \PHPUnit_Framework_TestCase
         $collection->key0 = array('value0');
         $collection->key0[] = 'value1';
         $this->assertEquals('value1', end($collection->key0));
+    }
+    //</editor-fold>
+
+    /**
+     * @covers \DCarbone\SimpleCollection::getArrayCopy
+     * @depends testCanConstructObjectWithArrayParameter
+     * @param \DCarbone\SimpleCollection $collection
+     */
+    public function testGetArrayCopy(\DCarbone\SimpleCollection $collection)
+    {
+        $copy = $collection->getArrayCopy();
+        $this->assertInternalType('array', $copy);
+        $this->assertSameSize($collection, $copy);
     }
 }

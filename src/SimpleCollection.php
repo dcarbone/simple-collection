@@ -146,13 +146,21 @@ class SimpleCollection implements SimpleCollectionInterface
     }
 
     /**
-     * Moves internal storage array pointer to last index
+     * Moves internal storage array pointer to last index and returns value
      *
-     * @return void
+     * @return mixed
      */
     public function end()
     {
-        $this->seek($this->lastKey());
+        return end($this->_storage);
+    }
+
+    /**
+     * @return array
+     */
+    public function getArrayCopy()
+    {
+        return $this->_storage;
     }
 
     /**
