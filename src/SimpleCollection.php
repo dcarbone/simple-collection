@@ -4,10 +4,18 @@
  * Class SimpleCollection
  * @package DCarbone
  */
-class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
+class SimpleCollection implements SimpleCollectionInterface
 {
     /** @var array */
     private $_storage = array();
+
+    /** @var bool */
+    private $_modified = true;
+
+    /** @var string|int */
+    private $_lastKey;
+    /** @var string|int */
+    private $_firstKey;
 
     /**
      * Constructor
@@ -33,12 +41,118 @@ class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
     }
 
     /**
-     * @param mixed $name
+     * @param string|int $name
      * @param mixed $value
      */
     function __set($name, $value)
     {
+        $this->_modified = true;
         $this->offsetSet($name, $value);
+    }
+
+    /**
+     * @return array
+     */
+    public function keys()
+    {
+        return array_keys($this->_storage);
+    }
+
+    /**
+     * @return array
+     */
+    public function values()
+    {
+        return array_values($this->_storage);
+    }
+
+    /**
+     * Executes array_search on internal storage array.
+     *
+     * Please refer to PHP docs for usage information.
+     * @link http://php.net/manual/en/function.array-search.php
+     *
+     * @param mixed $value
+     * @param bool|false $strict
+     * @return mixed
+     */
+    public function search($value, $strict = false)
+    {
+        return array_search($value, $this->_storage, $strict);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function firstValue()
+    {
+        if ($this->isEmpty())
+            return null;
+
+        if ($this->_modified)
+            $this->_updateFirstLastKeys();
+
+        return $this->_storage[$this->_firstKey];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function lastValue()
+    {
+        if ($this->isEmpty())
+            return null;
+
+        if ($this->_modified)
+            $this->_updateFirstLastKeys();
+
+        return $this->_storage[$this->_lastKey];
+    }
+
+    /**
+     * @return int|null|string
+     */
+    public function firstKey()
+    {
+        if ($this->isEmpty())
+            return null;
+
+        if ($this->_modified)
+            $this->_updateFirstLastKeys();
+
+        return $this->_firstKey;
+    }
+
+    /**
+     * @return int|null|string
+     */
+    public function lastKey()
+    {
+        if ($this->isEmpty())
+            return null;
+
+        if ($this->_modified)
+            $this->_updateFirstLastKeys();
+
+        return $this->_lastKey;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return 0 === count($this);
+    }
+
+    /**
+     * Moves internal storage array pointer to last index
+     *
+     * @return void
+     */
+    public function end()
+    {
+        $this->seek($this->lastKey());
     }
 
     /**
@@ -107,6 +221,7 @@ class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
      */
     public function seek($position)
     {
+        reset($this->_storage);
         while (($key = key($this->_storage)) !== null && $key !== $position)
         {
             next($this->_storage);
@@ -160,6 +275,7 @@ class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
      */
     public function offsetSet($offset, $value)
     {
+        $this->_modified = true;
         if (null === $offset)
             $this->_storage[] = $value;
         else
@@ -177,7 +293,10 @@ class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset))
+        {
+            $this->_modified = true;
             unset($this->_storage[$offset]);
+        }
     }
 
     /**
@@ -195,52 +314,15 @@ class SimpleCollection implements \SeekableIterator, \ArrayAccess, \Countable
     }
 
     /**
-     * @return array
+     * Update internal references to first and last keys in collection
      */
-    public function keys()
+    private function _updateFirstLastKeys()
     {
-        return array_keys($this->_storage);
-    }
+        end($this->_storage);
+        $this->_lastKey = key($this->_storage);
+        reset($this->_storage);
+        $this->_firstKey = key($this->_storage);
 
-    /**
-     * @return array
-     */
-    public function values()
-    {
-        return array_values($this->_storage);
-    }
-
-    /**
-     * @param mixed $value
-     * @param bool|false $strict
-     * @return mixed
-     */
-    public function search($value, $strict = false)
-    {
-        return array_search($this->_storage, $value, $strict);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function first()
-    {
-        return @reset(array_values($this->_storage));
-    }
-
-    /**
-     * @return mixed
-     */
-    public function last()
-    {
-        return @reset(array_values($this->_storage));
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty()
-    {
-        return 0 === count($this);
+        $this->_modified = false;
     }
 }

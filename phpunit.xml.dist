@@ -12,9 +12,16 @@
         syntaxCheck="true"
         >
 
-    <testsuite name="SimpleCollection">
-        <directory>./tests/</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="SimpleCollection">
+            <file>./tests/ConstructionTests.php</file>
+            <file>./tests/ImplementsTests.php</file>
+            <file>./tests/ArrayAccessTests.php</file>
+            <file>./tests/SeekableIteratorTests.php</file>
+            <file>./tests/CountableTests.php</file>
+            <file>./tests/FunctionalTests.php</file>
+        </testsuite>
+    </testsuites>
 
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
